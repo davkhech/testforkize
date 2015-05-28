@@ -79,6 +79,7 @@ public class Main extends Activity{
                 stringBuffer.append("\n");
                 stringBuffer.append("\n");
                 stringBuffer.append("\n");
+                stringBuffer.append("\nTesting...");
 
                 String conn = (isNetworkAvailable()) ? "Connected" : "Disconnected";
                 stringBuffer.append(conn);
