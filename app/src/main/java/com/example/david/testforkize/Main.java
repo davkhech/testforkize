@@ -60,26 +60,36 @@ public class Main extends Activity{
                 DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
                 int width = displayMetrics.widthPixels;
                 int height = displayMetrics.heightPixels;
+                float density = displayMetrics.density;
+                int densityDpi = displayMetrics.densityDpi;
+                float xdpi = displayMetrics.xdpi;
+                float ydpi = displayMetrics.ydpi;
 
                 StringBuffer stringBuffer = new StringBuffer("Display: ");
-                stringBuffer.append(String.valueOf(width));
-                stringBuffer.append(" ");
-                stringBuffer.append(String.valueOf(height));
+                stringBuffer.append(String.valueOf(width)).append(" ").append(String.valueOf(height)).append("\n");
+                stringBuffer.append(String.valueOf(density)).append(" ").append(String.valueOf(densityDpi)).append("\n");
+                stringBuffer.append(String.valueOf(xdpi)).append(" ").append(String.valueOf(ydpi)).append("\n");
                 stringBuffer.append("\n");
 
-                stringBuffer.append(Build.VERSION.CODENAME);
-                stringBuffer.append("\n");
-                stringBuffer.append(Build.VERSION.RELEASE);
-                stringBuffer.append("\nHardware: ");
+                String str = "Device: " + Build.DEVICE + "\nBRAND: " + Build.BRAND  + "\nMODEL: " + Build.MODEL
+                        + "\nProduct: " + Build.PRODUCT + "\nID: " + Build.ID + "\nSERIAL: " + Build.SERIAL + "\n" + "\n";
+                stringBuffer.append(str);
+
+                str = "Board: " + Build.BOARD + "\nBootLoader: " + Build.BOOTLOADER + "\nFingerPrint: " + Build.FINGERPRINT
+                        + "\nHost: " + Build.HOST + "\nUser: " + Build.USER + "\nTYPE: " + Build.TYPE + "\n" + "\n";
+                stringBuffer.append(str);
+                stringBuffer.append("Hardware: ");
                 stringBuffer.append(Build.HARDWARE);
                 stringBuffer.append("\nDisplay: ");
                 stringBuffer.append(Build.DISPLAY);
                 stringBuffer.append("\nManufacturer: ");
                 stringBuffer.append(Build.MANUFACTURER);
+
+                stringBuffer.append("\n").append("\nRelease ");
+                stringBuffer.append(Build.VERSION.RELEASE).append(" API Level: ").append(Build.VERSION.SDK_INT).append("\n");
+
                 stringBuffer.append("\n");
-                stringBuffer.append("\n");
-                stringBuffer.append("\n");
-                stringBuffer.append("\nTesting...");
+                stringBuffer.append("\nTesting... ");
 
                 String conn = (isNetworkAvailable()) ? "Connected" : "Disconnected";
                 stringBuffer.append(conn);
