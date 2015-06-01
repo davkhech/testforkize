@@ -21,6 +21,9 @@ public class Main extends Activity{
     Button button;
     double longitude;
     double latitude;
+    LocationListener locationListener;
+    LocationManager locationManager;
+    ConnectivityManager connectivityManager;
 
     @Override
     protected void onStart() {
@@ -30,8 +33,9 @@ public class Main extends Activity{
         textView =(TextView) findViewById(R.id.tv);
         button = (Button) findViewById(R.id.button);
 
-        final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        final LocationListener locationListener = new LocationListener() {
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 longitude = location.getLongitude();
@@ -91,8 +95,26 @@ public class Main extends Activity{
                 stringBuffer.append("\n");
                 stringBuffer.append("\nTesting... ");
 
-                String conn = (isNetworkAvailable()) ? "Connected" : "Disconnected";
-                stringBuffer.append(conn);
+                NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                String conn = (activeNetworkInfo != null && activeNetworkInfo.isConnected()) ? "Connected" : "Disconnected";
+                stringBuffer.append(conn).append("\n").append("connectivity type: ");
+
+                if (activeNetworkInfo != null){
+                    int i = activeNetworkInfo.getType();
+                    if (i == ConnectivityManager.TYPE_MOBILE) {
+                        stringBuffer.append("mobile");
+
+                    } else if (i == ConnectivityManager.TYPE_WIFI) {
+                        stringBuffer.append("Wi-Fi");
+
+                    } else if (i == ConnectivityManager.TYPE_BLUETOOTH) {
+                        stringBuffer.append("Bluethood");
+
+                    } else {
+                        stringBuffer.append("unknown");
+                    }
+                }
+
                 stringBuffer.append("\n").append("\n");
 
                 boolean netProv = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -131,10 +153,10 @@ public class Main extends Activity{
         });
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        locationManager.removeUpdates(locationListener);
     }
 }
