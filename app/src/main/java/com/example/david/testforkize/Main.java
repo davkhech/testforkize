@@ -2,6 +2,7 @@ package com.example.david.testforkize;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,8 +30,8 @@ public class Main extends Activity{
         textView =(TextView) findViewById(R.id.tv);
         button = (Button) findViewById(R.id.button);
 
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
+        final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        final LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 longitude = location.getLongitude();
@@ -52,7 +53,6 @@ public class Main extends Activity{
 
             }
         };
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +67,7 @@ public class Main extends Activity{
 
                 StringBuffer stringBuffer = new StringBuffer("Display: ");
                 stringBuffer.append(String.valueOf(width)).append(" ").append(String.valueOf(height)).append("\n");
-                stringBuffer.append(String.valueOf(density)).append(" ").append(String.valueOf(densityDpi)).append("\n");
+                stringBuffer.append("Density: ").append(String.valueOf(density)).append(" ").append(String.valueOf(densityDpi)).append("\n");
                 stringBuffer.append(String.valueOf(xdpi)).append(" ").append(String.valueOf(ydpi)).append("\n");
                 stringBuffer.append("\n");
 
@@ -93,12 +93,38 @@ public class Main extends Activity{
 
                 String conn = (isNetworkAvailable()) ? "Connected" : "Disconnected";
                 stringBuffer.append(conn);
-                stringBuffer.append("\n");
-                stringBuffer.append("\nYour Location is: ");
+                stringBuffer.append("\n").append("\n");
 
-                stringBuffer.append(String.valueOf(longitude));
-                stringBuffer.append(": ");
-                stringBuffer.append(String.valueOf(latitude));
+                boolean netProv = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                boolean gpsProv = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+                if (!netProv && !gpsProv){
+                    stringBuffer.append("There are no available providers\n");
+                    PackageManager packageManager = getPackageManager();
+
+                    if (!packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION)){
+                        stringBuffer.append("Your device has no feature to show location\n");
+                    } else {
+                        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)){
+                            stringBuffer.append("Your device has no feature to show location via GPS\n");
+                        }
+                        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)){
+                            stringBuffer.append("Your device has no feature to show location via Network");
+                        }
+                    }
+                } else {
+
+                    if (netProv){
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                    } else {
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                    }
+
+                    stringBuffer.append("Your location is: ");
+                    stringBuffer.append(String.valueOf(longitude));
+                    stringBuffer.append(": ");
+                    stringBuffer.append(String.valueOf(latitude));
+                }
 
                 textView.setText(stringBuffer);
             }
